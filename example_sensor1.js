@@ -31,4 +31,4 @@ client.on('connect', function(connection) {
 });
 
 
-client.connect('ws://131.179.40.65:8001/object/frontdoor/send', '');
+client.connect('ws://131.179.40.65:8000/object/frontdoor/send', '');

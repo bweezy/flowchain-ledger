@@ -122,6 +122,7 @@ var ondata = function(req, res) {
 
 function BootNode() {
     this.server = server;
+    this.temp = 0;
 }
 
 BootNode.prototype.start = function(options) {
@@ -131,6 +132,16 @@ BootNode.prototype.start = function(options) {
         onquery: onquery,
         ondata: ondata
     });
+};
+
+
+BootNode.prototype.sampleTemperature = function() { 
+
+    console.log("sampleTemp");
+    console.log(this);
+    console.log("temp: " , this.temp);
+    this.temp = this.temp + 1;
+
 };
 
 if (typeof(module) != "undefined" && typeof(exports) != "undefined")
