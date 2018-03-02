@@ -140,11 +140,30 @@ function Server() {
 
 /**
  * The server event handlers
+ * payload { 
+            data: { 
+                    message: {
+                               id,
+                               type,
+                               data: {
+                                       message: {},
+                                       from: {}
+                                     }
+                              }
+                    from: {
+                            address,
+                            port,
+                            id
+                          }   
+                  } 
+ *          }
+ *
  */
 Server.prototype.onData = function(payload) {
   // Parse the data received from Chord node (WebSocket client)
   var packet = typeof payload.data === 'object' ? payload.data : deserialize(payload.data);
-
+  console.log('payload: ', payload);
+  console.log('packet: ', packet);
   // Request URI
   var pathname = payload.pathname;
 

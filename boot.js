@@ -3,5 +3,3 @@ var node = new BootNode();
 
 node.start();
 
-
-while(1){}
