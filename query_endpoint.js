@@ -19,7 +19,7 @@ client.on('connect', function(connection) {
         if (connection.connected) {
             var number = Math.round(Math.random() * 0xFFFFFF);
             var lucky = Math.round(Math.random() * 100 + 1);
-            var obj = {temperature: lucky};
+            var obj = {temperature: lucky, type: 'query'};
 
             console.log('[SEND]', JSON.stringify(obj));
 
@@ -31,4 +31,4 @@ client.on('connect', function(connection) {
 });
 
 
-client.connect('ws://131.179.40.65:8001/object/frontdoor/send', '');
+client.connect('ws://127.0.0.1:8000/object/frontdoor/send', '');

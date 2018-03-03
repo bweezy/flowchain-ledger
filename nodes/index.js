@@ -1,4 +1,5 @@
 module.exports = {
     BootNode: require('./boot'),
-    PeerNode: require('./peer')
+    PeerNode: require('./peer'),
+    AlphaNode: require('./alpha_node')
 };
