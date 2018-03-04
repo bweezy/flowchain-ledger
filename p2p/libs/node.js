@@ -81,7 +81,9 @@ Node.prototype._startUpdateFingers = function() {
         var fixFingerId = '';
         var next = this.next_finger;
 
+
         if (next >= this.finger_entries) {
+            console.log('set next to 0');
             next = 0;
         }
 
@@ -132,8 +134,9 @@ Node.prototype._startUpdateFingers = function() {
     };
 
     // Stabilize
+    
     this._stabilize = setInterval(function stabilize() {
-        this.send(this.successor, { type: Chord.NOTIFY_STABILZE });
+        this.send(this.successor, { type: Chord.NOTIFY_STABILIZE });
     }.bind(this), 2500);
 
     // Failure check
@@ -164,7 +167,6 @@ Node.prototype._startUpdateFingers = function() {
             this.successor = this._self;
             this.successor_ttl = this.ttl;
         }
-
         this.send(this.successor, { type: Chord.CHECK_SUCESSOR, successor_ttl: this.successor_ttl });
     }.bind(this), 3500);
 
@@ -293,7 +295,7 @@ Node.prototype.dispatch = function(_from, _message) {
 
     switch (message.type) {
         // N notifies its successor for predecessor
-        case Chord.NOTIFY_STABILZE:
+        case Chord.NOTIFY_STABILIZE:
             /*
              *  n.stabilize()
              *    x = successor.predecessor;
@@ -304,7 +306,7 @@ Node.prototype.dispatch = function(_from, _message) {
             if (ChordUtils.DebugStabilize)
                 console.log('NOTIFY_STABILZE: from =', from.id, ', this =', this.id, ', this.successor =', this.successor.id);
 
-            // N might be our predecessor
+            // N might be our predecessor_ttl
             if (this.predecessor === null) {
                 this.predecessor = from;
             }
@@ -323,7 +325,7 @@ Node.prototype.dispatch = function(_from, _message) {
         case Chord.NOTIFY_PREDECESSOR:
             if (ChordUtils.DebugStabilize)
                 console.log('NOTIFY_PREDECESSOR: from =', from.id, ', this =', this.id, ', this.successor =', this.successor.id);
-
+            
             if (ChordUtils.isInRange(from.id, this.id, this.successor.id)) {
                 this.successor = from;
 
@@ -374,7 +376,7 @@ Node.prototype.dispatch = function(_from, _message) {
                 message.type = Chord.MESSAGE;
                 this.send(this, message, from);
 
-            // find successor(n)
+            // find successor
             } else {
                 this.successor = from;
 

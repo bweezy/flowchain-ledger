@@ -278,8 +278,6 @@ Server.prototype.onNewThing = function(thing) {
   if (Debug.Verbose)
     console.info('onNewThing:', thing);
 
-  console.log('On new thing');
-
   // Invoke framework API to register new thing
   this.registerThing(thing);
 };
