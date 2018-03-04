@@ -35,7 +35,7 @@ var onmessage = function(req, res) {
 
     // Get a block
     if (!block) {
-        console.log('[Blockchain] no usable block now, data is ignored.');
+        //console.log('[Blockchain] no usable block now, data is ignored.');
         return;
     }
 
@@ -59,13 +59,13 @@ var onmessage = function(req, res) {
 
         // fetch by key
         db.get(hash, function (err, value) {
-        console.log('[Database] get err =', err);
+        //console.log('[Database] get err =', err);
 
             if (err)
                 return console.log('Ooops! onmessage =', err) // likely the key was not found
 
-            console.log('[Blockchain]', value, 'is in Block#' + block.no, ', its data key =', key);
-            console.log('[Blockchain] verifying tx =', key);
+            //console.log('[Blockchain]', value, 'is in Block#' + block.no, ', its data key =', key);
+            //console.log('[Blockchain] verifying tx =', key);
 
             res.read(key);
         });
@@ -84,7 +84,7 @@ var onquery = function(req, res) {
     var tx = req.tx;
     var block = req.block;
 
-    console.log('[Blockchain] verified tx =', tx);
+    //console.log('[Blockchain] verified tx =', tx);
 
     if (!block) return;
 
@@ -104,7 +104,7 @@ var onquery = function(req, res) {
             port: req.node.port
         };
 
-        console.log('[Blockchain]', tx, 'is found at Block#' + block.no);
+        //console.log('[Blockchain]', tx, 'is found at Block#' + block.no);
         res.send(tx);
     });
 };
