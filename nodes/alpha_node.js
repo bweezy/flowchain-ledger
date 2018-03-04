@@ -17,9 +17,6 @@ var g_tx = null;
 
 function AlphaNode() {
     this.server = server;
-    var prime_length = 60;
-    this.dh = crypto.createDiffieHellman(prime_length);
-    this.dh.generateKeys('hex')
 
     this.privateKey = fs.readFileSync('alpha_private.txt', 'utf8');
     this.alphaPublicKey = fs.readFileSync('alpha_public.txt', 'utf8');
@@ -28,6 +25,7 @@ function AlphaNode() {
     this.permissions = 'temp';
     this.public_key = this.alphaPublicKey;
   
+
 	this.properties = {"name": this.name, "permissions": this.permissions, "public_key": this.public_key};
 }
 
@@ -37,6 +35,7 @@ AlphaNode.prototype.sign = function(data) {
    	sign.update(data);
    	var signature = sign.sign(this.privateKey, 'hex');
    	return signature;
+
 }
 
 /*
