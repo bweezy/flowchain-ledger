@@ -14,6 +14,13 @@ var db = new Database('picodb');
 function NewNode() {
     this.server = server;
     this.chordNode = null;
+    var prime_length = 60;
+    this.dh = crypto.createDiffieHellman(prime_length);
+    this.dh.generateKeys('hex')
+
+	console.log("Public Key : " ,this.dh.getPublicKey('hex'));
+	console.log("Private Key : " ,this.dh.getPrivateKey('hex'));
+	this.properties = {"name":"node", "permissions":"none", "public_key": this.dh.getPublicKey('hex')}
 }
 
 /*
@@ -51,7 +58,7 @@ var ondata = function(req, res) {
 
 
 
-AlphaNode.prototype.start = function() {
+NewNode.prototype.start = function() {
 	this.server.start({
 		onstart: onstart,
 		onmessage: onmessage,
