@@ -34,7 +34,11 @@ var onmessage = function(req, res) {
 		if(info.type === 'query')
 		{
 			console.log('received query');
-			return;
+
+			
+
+
+
 		}else if(info.type === 'data'){
 
 			console.log('received data');

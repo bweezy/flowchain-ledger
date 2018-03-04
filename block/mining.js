@@ -93,7 +93,7 @@ Miner.prototype.generateHash = function() {
 
     // Fix difficulty
     this.jiffies = os.uptime() - this.startUptime;
-    this._fixDifficultyNormal();
+    this._fixDifficulty();
 
     this.newBlock.nonce++;
     this._success = ( this.newBlock.hash < this.newBlock.difficulty );

@@ -227,10 +227,10 @@ Server.prototype.onData = function(payload) {
     };
 
 
-    console.log('in query');
+    //console.log('in query');
     //console.trace('in query');
-    console.log('packet ', payload);
-    console.log('tx ', tx)
+    //console.log('packet ', payload);
+    //console.log('tx ', tx)
     req.node = this.node;
     req.payload = payload;
     req.block = this.blockchain[this.blockchain.length - 1];
@@ -277,6 +277,8 @@ Server.prototype.onData = function(payload) {
 Server.prototype.onNewThing = function(thing) {
   if (Debug.Verbose)
     console.info('onNewThing:', thing);
+
+  console.log('On new thing');
 
   // Invoke framework API to register new thing
   this.registerThing(thing);
@@ -334,7 +336,7 @@ Server.prototype.start = function(options) {
   // Start to generate a hash
   this._miner_id = setInterval(function() {
       miner.generateHash();
-
+      //console.log('mining');
       // A success hash is generated
       if (miner.isSuccess()) {
           var block = miner.getNewBlock();
