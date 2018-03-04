@@ -13,6 +13,14 @@ var db = new Database('picodb');
 
 function AlphaNode() {
     this.server = server;
+
+    var prime_length = 60;
+    this.dh = crypto.createDiffieHellman(prime_length);
+    this.dh.generateKeys('hex')
+
+	console.log("Public Key : " ,this.dh.getPublicKey('hex'));
+	console.log("Private Key : " ,this.dh.getPrivateKey('hex'));
+	this.properties = {"name":"node", "permissions":"none", "public_key": this.dh.getPublicKey('hex')}
 }
 
 /*
