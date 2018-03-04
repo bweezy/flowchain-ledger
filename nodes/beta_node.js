@@ -11,7 +11,7 @@ var crypto = Flowchain.Crypto;
 var Database = Flowchain.DatabaseAdapter;
 var db = new Database('picodb');
 
-function AlphaNode() {
+function BetaNode() {
     this.server = server;
 }
 
@@ -34,9 +34,6 @@ var onmessage = function(req, res) {
 		if(info.type === 'query')
 		{
 			console.log('received query');
-
-
-
 
 
 		}else if(info.type === 'data'){
@@ -67,11 +64,6 @@ var onmessage = function(req, res) {
 			});
 		}
 	}
-
-
-
-
-		
 }
 
 /*
@@ -96,8 +88,6 @@ var onquery = function(req, res) {
  */
 var ondata = function(req, res) {
 
-	//console.log(req.data);
-
 	var data = req.data;
     var put = res.save;
    	if(typeof data.message === 'undefined' && typeof data.type === 'undefined')
@@ -109,15 +99,19 @@ var ondata = function(req, res) {
 
 
 
-AlphaNode.prototype.start = function() {
+BetaNode.prototype.start = function() {
 	this.server.start({
 		onstart: onstart,
 		onmessage: onmessage,
 		onquery: onquery,
-		ondata: ondata
+		ondata: ondata,
+        join: {
+            address: process.env['PEER_ADDR'] || 'localhost',
+            port: process.env['PEER_PORT'] || '8000'
+        }
 	});
 };
 
 if (typeof(module) != "undefined" && typeof(exports) != "undefined")
-    module.exports = AlphaNode;
+    module.exports = BetaNode;
 
