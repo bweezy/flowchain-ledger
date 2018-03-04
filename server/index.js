@@ -162,8 +162,8 @@ function Server() {
 Server.prototype.onData = function(payload) {
   // Parse the data received from Chord node (WebSocket client)
   var packet = typeof payload.data === 'object' ? payload.data : deserialize(payload.data);
-  console.log('payload: ', payload);
-  console.log('packet: ', packet);
+  //console.log('payload: ', payload);
+  //console.log('packet: ', packet);
   // Request URI
   var pathname = payload.pathname;
 
@@ -178,6 +178,8 @@ Server.prototype.onData = function(payload) {
           save: function() {},
           read: function() {}
         };
+
+        //console.log('packet: ', packet);
 
         req.node = this.node;
         req.data = packet;
@@ -224,6 +226,11 @@ Server.prototype.onData = function(payload) {
       send: function() {}
     };
 
+
+    console.log('in query');
+    //console.trace('in query');
+    console.log('packet ', payload);
+    console.log('tx ', tx)
     req.node = this.node;
     req.payload = payload;
     req.block = this.blockchain[this.blockchain.length - 1];
