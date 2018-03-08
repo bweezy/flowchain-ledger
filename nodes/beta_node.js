@@ -11,6 +11,8 @@ var crypto = Flowchain.Crypto;
 var Database = Flowchain.DatabaseAdapter;
 var db = new Database('picodb');
 
+var g_tx = null;
+
 function BetaNode() {
     this.server = server;
 }
@@ -35,6 +37,20 @@ var onmessage = function(req, res) {
 		{
 			console.log('received query');
 
+		    var hash = crypto.createHmac('sha256', block.hash)
+		                .update( g_tx )
+		                .digest('hex');
+
+      		db.get(hash, function (err, value) {
+        		if (err)
+                	return console.log('Ooops! onmessage =', err)
+                else
+                	console.log(value);
+
+    		});
+
+
+
 
 		}else if(info.type === 'data'){
 
@@ -51,16 +67,19 @@ var onmessage = function(req, res) {
 
 
 			var asset = {
+				type: 'key',
 				key: key
 			};
 
-			res.send(asset);
+			g_tx = key;
+
+			res.save(asset);
 
 			console.log('placing data ');
 
 			db.put(hash, tx, function(err){
 				if (err)
-						return console.log('Database put error = ', err);
+					return console.log('Database put error = ', err);
 			});
 		}
 	}
@@ -93,7 +112,6 @@ var ondata = function(req, res) {
    	if(typeof data.message === 'undefined' && typeof data.type === 'undefined')
     	data.type = 'data';
     put(data);
-
 }
 
 

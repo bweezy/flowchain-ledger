@@ -216,7 +216,7 @@ Node.prototype.save = function(data) {
 
     var message = {
         id: key,
-        type: Chord.FIND_SUCCESSOR,
+        type: Chord.MESSAGE,
         data: data
     };
 

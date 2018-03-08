@@ -24,7 +24,6 @@ client.on('connect', function(connection) {
             console.log('[SEND]', JSON.stringify(obj));
 
             connection.sendUTF(JSON.stringify(obj));
-            setTimeout(sendNumber, 1000);
         }
     }
     sendNumber();

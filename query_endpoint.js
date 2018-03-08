@@ -19,12 +19,11 @@ client.on('connect', function(connection) {
         if (connection.connected) {
             var number = Math.round(Math.random() * 0xFFFFFF);
             var lucky = Math.round(Math.random() * 100 + 1);
-            var obj = {temperature: lucky, type: 'query'};
+            var obj = {key: lucky, type: 'query'};
 
             console.log('[SEND]', JSON.stringify(obj));
 
             connection.sendUTF(JSON.stringify(obj));
-            setTimeout(sendNumber, 1000);
         }
     }
     sendNumber();

@@ -11,6 +11,8 @@ var crypto = Flowchain.Crypto;
 var Database = Flowchain.DatabaseAdapter;
 var db = new Database('picodb');
 
+var g_tx = null;
+
 function AlphaNode() {
     this.server = server;
     var prime_length = 60;
@@ -41,10 +43,7 @@ var onmessage = function(req, res) {
 		if(info.type === 'query')
 		{
 			console.log('received query');
-
-
-
-
+			res.read(g_tx)
 
 		}else if(info.type === 'data'){
 
@@ -61,10 +60,11 @@ var onmessage = function(req, res) {
 
 
 			var asset = {
+				type: 'key',
 				key: key
 			};
 
-			res.send(asset);
+			res.save(asset);
 
 			console.log('placing data ');
 
@@ -72,6 +72,10 @@ var onmessage = function(req, res) {
 				if (err)
 						return console.log('Database put error = ', err);
 			});
+		}else if(info.type === 'key')
+		{
+			console.log('received key');
+			g_tx = key;
 		}
 	}
 
@@ -108,7 +112,10 @@ var ondata = function(req, res) {
 	var data = req.data;
     var put = res.save;
    	if(typeof data.message === 'undefined' && typeof data.type === 'undefined')
+   	{	
+   		console.log('received data: ', data);
     	data.type = 'data';
+   	}
     put(data);
 
 }
