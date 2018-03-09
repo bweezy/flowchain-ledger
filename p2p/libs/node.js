@@ -194,6 +194,7 @@ Node.prototype.send = function(from, message, to) {
         message.id = this.id;
     }
 
+    //encryptMessage here?
     var packet = {
         from: {
             address: from.address,

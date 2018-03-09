@@ -19,6 +19,15 @@ function AlphaNode() {
     this.dh = crypto.createDiffieHellman(prime_length);
     this.dh.generateKeys('hex')
 
+    var keypair = require('keypair');
+    var pair = keypair();
+    var privateKey = this.dh.getPrivateKey('hex');
+    var sign = crypto.createSign('SHA256');
+    sign.update('test message');
+
+
+    console.log("Signature : " ,sign.sign(pair.private, 'hex'));
+
 	console.log("Public Key : " ,this.dh.getPublicKey('hex'));
 	console.log("Private Key : " ,this.dh.getPrivateKey('hex'));
 	this.properties = {"name":"node", "permissions":"none", "public_key": this.dh.getPublicKey('hex')}
