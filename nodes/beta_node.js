@@ -36,21 +36,7 @@ var onmessage = function(req, res) {
 		if(info.type === 'query')
 		{
 			console.log('received query');
-
-		    var hash = crypto.createHmac('sha256', block.hash)
-		                .update( g_tx )
-		                .digest('hex');
-
-      		db.get(hash, function (err, value) {
-        		if (err)
-                	return console.log('Ooops! onmessage =', err)
-                else
-                	console.log(value);
-
-    		});
-
-
-
+			res.read(g_tx)
 
 		}else if(info.type === 'data'){
 
@@ -71,18 +57,40 @@ var onmessage = function(req, res) {
 				key: key
 			};
 
-			g_tx = key;
-
 			res.save(asset);
 
 			console.log('placing data ');
 
 			db.put(hash, tx, function(err){
 				if (err)
-					return console.log('Database put error = ', err);
+						return console.log('Database put error = ', err);
 			});
+		}else if(info.type === 'join key'){
+
+			console.log('received join request');
+
+
+			//validate signature from alpha
+
+			//if valid
+				//place in db
+				//send to successor
+				// just use put?
+				// might need to strip message down, then use put
+			//else
+				//nothing?
+
+
+		}else if(info.type === 'key'){
+			console.log('received key');
+			g_tx = key;
 		}
 	}
+
+
+
+
+		
 }
 
 /*
@@ -91,15 +99,32 @@ var onmessage = function(req, res) {
  */
 var onstart = function(req, res) {
 
-}
+};
 
 /*
- * req { node, payload, block, tx }
- * res ( save, read, send )
+ * req { node, from, payload, block }
+ * res { save, read, send }
  */
 var onquery = function(req, res) {
 
-}
+};
+
+
+/*
+ * req { node, payload, block, tx }
+ * res { save, read, send }
+ */
+var onjoin = function(req, res) {
+
+
+	//validate that node is in data base
+	//ask successor
+	//ask predecessor
+	//return majority (x && y) || (x && z) || (y && z)
+
+
+
+};
 
 /*
  * req { node, data }
@@ -107,12 +132,18 @@ var onquery = function(req, res) {
  */
 var ondata = function(req, res) {
 
+	//console.log(req.data);
+
 	var data = req.data;
     var put = res.save;
    	if(typeof data.message === 'undefined' && typeof data.type === 'undefined')
+   	{	
+   		console.log('received data: ', data);
     	data.type = 'data';
+   	}
     put(data);
-}
+
+};
 
 
 
@@ -123,6 +154,7 @@ BetaNode.prototype.start = function() {
 		onmessage: onmessage,
 		onquery: onquery,
 		ondata: ondata,
+		onjoin: onjoin,
         join: {
             address: process.env['PEER_ADDR'] || 'localhost',
             port: process.env['PEER_PORT'] || '8000'

@@ -81,8 +81,21 @@ var onmessage = function(req, res) {
 				if (err)
 						return console.log('Database put error = ', err);
 			});
-		}else if(info.type === 'key')
-		{
+		}else if(info.type === 'join key'){
+
+			console.log('received join request');
+
+
+			//validate signature
+
+			//if valid
+				//place in db
+				//send to successor
+			//else
+				//nothing?
+
+
+		}else if(info.type === 'key'){
 			console.log('received key');
 			g_tx = key;
 		}
@@ -107,6 +120,14 @@ var onstart = function(req, res) {
  * res ( save, read, send )
  */
 var onquery = function(req, res) {
+
+}
+
+/*
+ *
+ *
+ */
+var onjoin = function(req, res) {
 
 }
 
@@ -137,7 +158,8 @@ AlphaNode.prototype.start = function() {
 		onstart: onstart,
 		onmessage: onmessage,
 		onquery: onquery,
-		ondata: ondata
+		ondata: ondata,
+		onjoin: onjoin
 	});
 };
 

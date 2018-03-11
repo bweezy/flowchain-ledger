@@ -298,6 +298,7 @@ Server.prototype.start = function(options) {
         && typeof(this._options[prop]) === 'undefined')
       this._options[prop] = options[prop];
   }
+  console.log(this._options);
 
   // Prepare to start Websocket server
   var server = new WebsocketBroker({
@@ -401,6 +402,30 @@ Server.prototype.save = function(data) {
  */
 Server.prototype.read = function(key) {
   return this.node.read(key);
+};
+
+
+Server.prototype.onjoin = function(from, message){
+
+  var req = {
+    node: {}
+  };
+  var res = {
+    save: function() {},
+    read: function() {},
+    send: function() {}
+  };
+
+  req.node = this.node;
+  req.from = from;
+  req.payload = message;
+  req.block = this.blockchain[this.blockchain.length - 1];
+
+  res.save = this.save.bind(this);
+  res.read = this.read.bind(this);
+  res.send = this.sendAsset.bind(this);
+
+  return this._options.onjoin(req, res);
 };
 
 /**
