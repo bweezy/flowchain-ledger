@@ -25,6 +25,15 @@ function BetaNode() {
     this.privateKey = fs.readFileSync('beta_private.txt', 'utf8');
     this.publicKey = fs.readFileSync('beta_public.txt', 'utf8');
 
+    var props = ["temp", "alarm", "video", "audio"]
+    var perms = []
+    for(var i = 0; i < Math.random() * props.length; i++){
+    	perms.push(props[Math.random() * props.length])
+    	console.log(props)
+    	console.log
+    	console.log(perms[i])
+    }
+
     this.properties = {"name":"beta", "permissions":"none", "public_key": this.publicKey}
 }
 
