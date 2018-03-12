@@ -123,7 +123,6 @@ var onjoin = function(req, res) {
 	//return majority (x && y) || (x && z) || (y && z)
 
 
-
 };
 
 /*
