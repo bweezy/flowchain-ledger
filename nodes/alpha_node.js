@@ -83,7 +83,7 @@ var onmessage = function(req, res) {
 			});
 		}else if(info.type === 'join key'){
 
-			console.log('received join request');
+			console.log('received join key from alpha');
 
 
 			//validate signature
@@ -146,6 +146,13 @@ var ondata = function(req, res) {
    		console.log('received data: ', data);
     	data.type = 'data';
    	}
+
+   	// This block goes in alpha node only
+   	if(data.type === 'join key')
+   	{
+   		//sign message
+   	}
+
     put(data);
 
 }

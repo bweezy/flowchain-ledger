@@ -410,6 +410,7 @@ Server.prototype.onjoin = function(from, message){
   var req = {
     node: {}
   };
+  
   var res = {
     save: function() {},
     read: function() {},
