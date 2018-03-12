@@ -1,3 +1,6 @@
+var fs = require('fs');
+
+
 // Import the Flowchain library
 var Flowchain = require('../libs');
 
@@ -15,16 +18,21 @@ var g_tx = null;
 
 function BetaNode() {
     this.server = server;
+
+
+    this.alphaPublicKey = fs.readFileSync('alpha_public.txt', 'utf8');
+
 }
 
 /*
- * req { node, payload, block }
+ * req { tlNode, node, payload, block }
  * res ( save, read, send )
  */
 var onmessage = function(req, res) {
 	var payload = req.payload;
 	var block = req.block;
 	var node = req.node;
+	var tlNode = req.tlNode;
 
 	var data = JSON.parse(payload.data);
 	var message = data.message;
@@ -67,10 +75,17 @@ var onmessage = function(req, res) {
 			});
 		}else if(info.type === 'join key'){
 
-			console.log('received join key');
 
 
 			//validate signature from alpha
+			const verify = crypto.createVerify('SHA256');
+			verify.update(info.key)
+
+			if(verify.verify(tlNode.alphaPublicKey, info.signature, 'hex')){
+				console.log('verified');
+			}else{
+				console.log('verify failed');
+			}
 
 			//if valid
 				//place in db
@@ -121,17 +136,16 @@ var onjoin = function(req, res) {
 	//ask successor
 	//ask predecessor
 	//return majority (x && y) || (x && z) || (y && z)
-
+	return true;
 
 };
 
 /*
- * req { node, data }
+ * req { tlNode, node, data }
  * res { save, read }
  */
 var ondata = function(req, res) {
 
-	//console.log(req.data);
 
 	var data = req.data;
     var put = res.save;
@@ -158,7 +172,7 @@ BetaNode.prototype.start = function() {
             address: process.env['PEER_ADDR'] || 'localhost',
             port: process.env['PEER_PORT'] || '8000'
         }
-	});
+	}, this);
 };
 
 if (typeof(module) != "undefined" && typeof(exports) != "undefined")

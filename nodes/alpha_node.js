@@ -1,3 +1,5 @@
+var fs = require('fs');
+
 // Import the Flowchain library
 var Flowchain = require('../libs');
 
@@ -19,28 +21,21 @@ function AlphaNode() {
     this.dh = crypto.createDiffieHellman(prime_length);
     this.dh.generateKeys('hex')
 
-    var keypair = require('keypair');
-    var pair = keypair();
-    var privateKey = this.dh.getPrivateKey('hex');
-    var sign = crypto.createSign('SHA256');
-    sign.update('test message');
-
-
-    console.log("Signature : " ,sign.sign(pair.private, 'hex'));
-
-	console.log("Public Key : " ,this.dh.getPublicKey('hex'));
-	console.log("Private Key : " ,this.dh.getPrivateKey('hex'));
+    this.privateKey = fs.readFileSync('alpha_private.txt', 'utf8');
+    this.alphaPublicKey = fs.readFileSync('alpha_public.txt', 'utf8');
+  
 	this.properties = {"name":"node", "permissions":"none", "public_key": this.dh.getPublicKey('hex')}
 }
 
 /*
- * req { node, payload, block }
+ * req { tlNode, node, payload, block }
  * res ( save, read, send )
  */
 var onmessage = function(req, res) {
 	var payload = req.payload;
 	var block = req.block;
 	var node = req.node;
+	var tlNode = req.tlNode;
 
 	var data = JSON.parse(payload.data);
 	var message = data.message;
@@ -87,6 +82,15 @@ var onmessage = function(req, res) {
 
 
 			//validate signature
+			const verify = crypto.createVerify('SHA256');
+			verify.update(info.key)
+
+
+			if(verify.verify(tlNode.alphaPublicKey, info.signature, 'hex')){
+				console.log('verified');
+			}else{
+				console.log('verify failed');
+			}
 
 			//if valid
 				//place in db
@@ -128,17 +132,19 @@ var onquery = function(req, res) {
  *
  */
 var onjoin = function(req, res) {
+	return true;
 
 }
 
 /*
- * req { node, data }
+ * req { tlNode, node, data }
  * res { save, read }
  */
 var ondata = function(req, res) {
 
 	//console.log(req.data);
 
+	var tlNode = req.tlNode;
 	var data = req.data;
     var put = res.save;
    	if(typeof data.message === 'undefined' && typeof data.type === 'undefined')
@@ -151,6 +157,11 @@ var ondata = function(req, res) {
    	if(data.type === 'join key')
    	{
    		//sign message
+   		console.log(data);
+
+   		var sign = crypto.createSign('SHA256');
+    	sign.update(data.key);
+    	data.signature = sign.sign(tlNode.privateKey, 'hex');
    	}
 
     put(data);
@@ -167,7 +178,7 @@ AlphaNode.prototype.start = function() {
 		onquery: onquery,
 		ondata: ondata,
 		onjoin: onjoin
-	});
+	}, this);
 };
 
 if (typeof(module) != "undefined" && typeof(exports) != "undefined")

@@ -39,7 +39,7 @@ var Utils = {
 	DebugStabilize: false,
 	DebugMessage: false,
     DebugFailureCheck: false,
-	DebugPrintFingerTable: false,
+	DebugPrintFingerTable: true,
 
 	/**
 	 * Generate a hash key by SHA1. The key is used as identifier (ID) of each node.

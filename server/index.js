@@ -182,6 +182,7 @@ Server.prototype.onData = function(payload) {
         //console.log('packet: ', packet);
 
         req.node = this.node;
+        req.tlNode = this.topLayerNode;
         req.data = packet;
         res.save = this.save.bind(this);
         res.read = this.read.bind(this);
@@ -246,7 +247,8 @@ Server.prototype.onData = function(payload) {
   } else if (typeof this._options.onmessage === 'function'
         && packet.message.type === Chord.MESSAGE) {
     var req = {
-      node: {}
+      node: {},
+      topLayerNode: {}
     };
     var res = {
       save: function() {},
@@ -255,6 +257,7 @@ Server.prototype.onData = function(payload) {
     };
 
     req.node = this.node;
+    req.tlNode = this.topLayerNode;
     req.payload = payload;
     req.block = this.blockchain[this.blockchain.length - 1];
 
@@ -289,8 +292,9 @@ Server.prototype.onNewThing = function(thing) {
  * @returns {None}
  * @api public
  */
-Server.prototype.start = function(options) {
+Server.prototype.start = function(options, node) {
   var self = this;
+  this.topLayerNode = node;
   var options = options || {};
 
   for (var prop in options) {
@@ -298,7 +302,6 @@ Server.prototype.start = function(options) {
         && typeof(this._options[prop]) === 'undefined')
       this._options[prop] = options[prop];
   }
-  console.log(this._options);
 
   // Prepare to start Websocket server
   var server = new WebsocketBroker({
