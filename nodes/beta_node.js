@@ -29,6 +29,16 @@ function BetaNode() {
     this.permissions = 'none';
 
     this.properties = {"name":this.name, "permissions": this.permissions, "public_key": this.publicKey}
+
+    var props = ["temp", "alarm", "video", "audio"]
+    var perms = []
+    for(var i = 0; i < Math.random() * props.length; i++){
+    	perms.push(props[Math.random() * props.length])
+    	console.log(props)
+    	console.log
+    	console.log(perms[i])
+    }
+
 }
 
 BetaNode.prototype.sign = function(data) {
