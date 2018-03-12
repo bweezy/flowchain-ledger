@@ -67,7 +67,7 @@ var onmessage = function(req, res) {
 			});
 		}else if(info.type === 'join key'){
 
-			console.log('received join request');
+			console.log('received join key');
 
 
 			//validate signature from alpha
