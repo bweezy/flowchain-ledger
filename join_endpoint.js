@@ -1,3 +1,5 @@
+var fs = require('fs');
+
 var WebSocketClient = require('websocket').client;
 
 var client = new WebSocketClient();
@@ -19,7 +21,9 @@ client.on('connect', function(connection) {
         if (connection.connected) {
             var number = Math.round(Math.random() * 0xFFFFFF);
             var lucky = Math.round(Math.random() * 100 + 1);
-            var obj = {key: '0ddc5b2075eb1a5c', type: 'join key'};
+
+            betaKey = fs.readFileSync('beta_public.txt', 'utf8');
+            var obj = {"name":"beta", "permissions":"temp", "key": betaKey, "type" : "join key"}
 
             console.log('[SEND]', JSON.stringify(obj));
 

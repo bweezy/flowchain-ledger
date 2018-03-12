@@ -11,7 +11,7 @@ var crypto = Flowchain.Crypto;
 
 // Database
 var Database = Flowchain.DatabaseAdapter;
-var db = new Database('picodb');
+var db = new Database('nedb');
 
 var g_tx = null;
 
@@ -24,7 +24,7 @@ function AlphaNode() {
     this.privateKey = fs.readFileSync('alpha_private.txt', 'utf8');
     this.alphaPublicKey = fs.readFileSync('alpha_public.txt', 'utf8');
   
-	this.properties = {"name":"node", "permissions":"none", "public_key": this.dh.getPublicKey('hex')}
+	this.properties = {"name":"node", "permissions":"temp", "public_key": this.dh.getPublicKey('hex')}
 }
 
 /*
@@ -87,16 +87,36 @@ var onmessage = function(req, res) {
 
 
 			if(verify.verify(tlNode.alphaPublicKey, info.signature, 'hex')){
+				
 				console.log('verified');
+
+				//Need to change this to use block
+				var hash = crypto.createHmac('sha256', info.name)
+                        .update( info.key )
+                        .digest('hex');
+
+                db.get(hash, function (err, value){
+                	
+                	if(value.length === 0){
+		                db.put(hash, {'name': info.name, permissions: info.permissions, 'key': info.key }, function(err) {
+		                	
+		                	if(err) throw err;
+		                	console.log('placed data');
+
+		                	res.save(info)
+		                });
+		            }else{
+		            	console.log('value already exists');
+		            }
+
+                });
+
+
+
+
 			}else{
 				console.log('verify failed');
 			}
-
-			//if valid
-				//place in db
-				//send to successor
-			//else
-				//nothing?
 
 
 		}else if(info.type === 'key'){
@@ -156,9 +176,6 @@ var ondata = function(req, res) {
    	// This block goes in alpha node only
    	if(data.type === 'join key')
    	{
-   		//sign message
-   		console.log(data);
-
    		var sign = crypto.createSign('SHA256');
     	sign.update(data.key);
     	data.signature = sign.sign(tlNode.privateKey, 'hex');

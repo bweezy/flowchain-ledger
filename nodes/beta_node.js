@@ -12,7 +12,7 @@ var crypto = Flowchain.Crypto;
 
 // Database
 var Database = Flowchain.DatabaseAdapter;
-var db = new Database('picodb');
+var db = new Database('nedb');
 
 var g_tx = null;
 
@@ -22,6 +22,10 @@ function BetaNode() {
 
     this.alphaPublicKey = fs.readFileSync('alpha_public.txt', 'utf8');
 
+    this.privateKey = fs.readFileSync('beta_private.txt', 'utf8');
+    this.publicKey = fs.readFileSync('beta_public.txt', 'utf8');
+
+    this.properties = {"name":"beta", "permissions":"none", "public_key": this.publicKey}
 }
 
 /*
@@ -75,26 +79,41 @@ var onmessage = function(req, res) {
 			});
 		}else if(info.type === 'join key'){
 
+			console.log('received join key from alpha');
 
 
-			//validate signature from alpha
+			//validate signature
 			const verify = crypto.createVerify('SHA256');
 			verify.update(info.key)
 
+
 			if(verify.verify(tlNode.alphaPublicKey, info.signature, 'hex')){
+				
 				console.log('verified');
-			}else{
-				console.log('verify failed');
-			}
 
-			//if valid
-				//place in db
-				//send to successor
-				// just use put?
-				// might need to strip message down, then use put
-			//else
-				//nothing?
+				//Need to change this to use block
+				var hash = crypto.createHmac('sha256', info.name)
+                        .update( info.key )
+                        .digest('hex');
 
+                db.get(hash, function (err, value){
+                	
+                	if(value.length === 0){
+		                db.put(hash, {'name': info.name, permissions: info.permissions, 'key': info.key }, function(err) {
+		                	
+		                	if(err) throw err;
+		                	console.log('placed data');
+
+		                	res.save(info)
+		                });
+		            }else{
+		            	console.log('value already exists');
+		            }
+
+                });
+            }else{
+            	console.log('verify failed');
+            }
 
 		}else if(info.type === 'key'){
 			console.log('received key');
