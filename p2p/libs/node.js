@@ -194,6 +194,7 @@ Node.prototype.send = function(from, message, to) {
         message.id = this.id;
     }
 
+    //encryptMessage here?
     var packet = {
         from: {
             address: from.address,
@@ -216,7 +217,7 @@ Node.prototype.save = function(data) {
 
     var message = {
         id: key,
-        type: Chord.FIND_SUCCESSOR,
+        type: Chord.MESSAGE,
         data: data
     };
 
@@ -389,6 +390,13 @@ Node.prototype.dispatch = function(_from, _message) {
         case Chord.NOTIFY_JOIN:
             if (ChordUtils.DebugNodeJoin)
                 console.info('Node joined: ' + JSON.stringify(from));
+
+            if(!this.server.onjoin(from, message)){
+                console.log('JOIN REJECTED');
+                break;
+            }else{
+                console.log('JOIN ACCEPTED');
+            }
 
         case Chord.FIND_SUCCESSOR:
             if (ChordUtils.DebugNodeJoin || ChordUtils.DebugSuccessor)
