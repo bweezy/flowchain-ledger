@@ -41,7 +41,10 @@ var Chord = {
     CHECK_PREDECESSOR: 6,
     CHECK_SUCESSOR: 7,
     CHECK_TTL: 8,
-    MESSAGE: 9
+    MESSAGE: 9,
+    REQUEST_JOIN: 10,
+    CONFIRM_JOIN: 11,
+    DENY_JOIN: 12
 };
 
 if (typeof(module) != "undefined" && typeof(exports) != "undefined")

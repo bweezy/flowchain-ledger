@@ -294,7 +294,9 @@ Server.prototype.onNewThing = function(thing) {
  */
 Server.prototype.start = function(options, node) {
   var self = this;
+
   this.topLayerNode = node;
+  //console.log(this.topLayerNode);
   var options = options || {};
 
   for (var prop in options) {
@@ -319,7 +321,8 @@ Server.prototype.start = function(options, node) {
 
   // Connect to a subsequent Chord node
   if (typeof options.join === 'object') {
-    this.node.join(options.join);
+    this.node.join(options.join, this.topLayerNode.name, this.topLayerNode.publicKey);
+    //add signature
   }
 
   server.start(router.route, wsHandlers);
@@ -408,7 +411,7 @@ Server.prototype.read = function(key) {
 };
 
 
-Server.prototype.onjoin = function(from, message){
+Server.prototype.onjoin = function(from, message, callback){
 
   var req = {
     node: {}
@@ -428,6 +431,7 @@ Server.prototype.onjoin = function(from, message){
   res.save = this.save.bind(this);
   res.read = this.read.bind(this);
   res.send = this.sendAsset.bind(this);
+  res.cb = callback;
 
   return this._options.onjoin(req, res);
 };
