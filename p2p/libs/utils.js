@@ -33,7 +33,7 @@ var Utils = {
 	DebugNodeJoin: false,
 	DebugFixFingers: false,
 	DebugServer: false,
-	DebugSuccessor: false,
+	DebugSuccessor: true,
 	DebugPredecessor: false,
 	DebugStabilize: false,
 	DebugMessage: false,
