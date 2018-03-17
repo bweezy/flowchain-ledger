@@ -54,7 +54,7 @@ function Node(id, server) {
     };
 
     // Create a new Chord ring
-    this.predecessor = null;
+    this.predecessor = this._self;
     this.successor = this._self;
 
     // Initialize finger table
@@ -62,6 +62,8 @@ function Node(id, server) {
     this.fingers.length = 0;
 
     this.next_finger = 0;
+    this.join_confirms = 0;
+    this.join_denies = 0;
 
     // TTL of predecessor
     this.predecessor_ttl = this.ttl;
@@ -250,9 +252,12 @@ Node.prototype.read = function(key) {
 /*
  * @return {boolean}
  */
-Node.prototype.join = function(remote) {
+Node.prototype.join = function(remote, name, key) {
+    //console.log(this.server);
     var message = {
-        type: Chord.NOTIFY_JOIN
+        type: Chord.NOTIFY_JOIN,
+        name: name,
+        key: key
     };
 
     this.predecessor = null;
@@ -293,6 +298,7 @@ Node.prototype.closet_finger_preceding = function(find_id) {
 Node.prototype.dispatch = function(_from, _message) {
     var from = _from;
     var message = _message;
+    var self = this;
 
     switch (message.type) {
         // N notifies its successor for predecessor
@@ -391,12 +397,80 @@ Node.prototype.dispatch = function(_from, _message) {
             if (ChordUtils.DebugNodeJoin)
                 console.info('Node joined: ' + JSON.stringify(from));
 
-            if(!this.server.onjoin(from, message)){
+            console.log('notify join message: ', message);
+            
+            this.server.onjoin(from, message, function(result){
+                //add signature verification
+                //check database for hash
+
+                if(result == true)
+                {
+                    self.join_confirms++;
+                }else{
+                    self.join_denies++;
+                }
+                //console.log(from);
+                //console.log(message);
+
+
+                message.from = from;
+                message.type = Chord.REQUEST_JOIN;
+                self.send(self.successor, message);
+                self.send(self.predecessor, message);
+            });
+            
+
+            break;
+
+        case Chord.REQUEST_JOIN:
+
+            //console.log('got request');
+            var joiner = message.from;
+            this.server.onjoin(joiner, message, function(result){
+
+                //console.log(result);
+                if(result == true){
+                    message.type = Chord.CONFIRM_JOIN;
+                }else{
+                    message.type = Chord.DENY_JOIN;
+                }
+                self.send(from, message);
+            });
+
+            break;
+
+        case Chord.CONFIRM_JOIN:
+        case Chord.DENY_JOIN:
+
+            if(message.type == Chord.CONFIRM_JOIN){
+                //console.log('got confirm');
+                this.join_confirms++;
+            }else if(message.type == Chord.DENY_JOIN){
+                //console.log('got deny')
+                this.join_denies++;
+            }
+            //console.log('confirms: ', this.join_confirms);
+            //console.log('denies: ', this.join_denies);
+
+            if(this.join_confirms + this.join_denies < 3)
+                break;
+
+            if(this.join_confirms < this.join_denies)
+            {
                 console.log('JOIN REJECTED');
+                this.join_confirms = 0;
+                this.join_denies = 0;
                 break;
             }else{
+                this.join_confrims = 0;
+                this.join_denies = 0;
                 console.log('JOIN ACCEPTED');
+                from = message.from;
             }
+            console.log('confirm join message', message);
+
+
+
 
         case Chord.FIND_SUCCESSOR:
             if (ChordUtils.DebugNodeJoin || ChordUtils.DebugSuccessor)

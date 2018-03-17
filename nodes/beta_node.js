@@ -25,7 +25,10 @@ function BetaNode() {
     this.privateKey = fs.readFileSync('beta_private.txt', 'utf8');
     this.publicKey = fs.readFileSync('beta_public.txt', 'utf8');
 
-    this.properties = {"name":"beta", "permissions":"none", "public_key": this.publicKey}
+    this.name = 'beta';
+    this.permissions = 'none';
+
+    this.properties = {"name":this.name, "permissions": this.permissions, "public_key": this.publicKey}
 }
 
 /*

@@ -23,8 +23,12 @@ function AlphaNode() {
 
     this.privateKey = fs.readFileSync('alpha_private.txt', 'utf8');
     this.alphaPublicKey = fs.readFileSync('alpha_public.txt', 'utf8');
+
+    this.name = 'alpha';
+    this.permissions = 'temp';
+    this.public_key = this.alphaPublicKey;
   
-	this.properties = {"name":"node", "permissions":"temp", "public_key": this.dh.getPublicKey('hex')}
+	this.properties = {"name": this.name, "permissions": this.permissions, "public_key": this.public_key};
 }
 
 /*
@@ -83,14 +87,14 @@ var onmessage = function(req, res) {
 
 			//validate signature
 			const verify = crypto.createVerify('SHA256');
-			verify.update(info.key)
-
+			verify.update(info.key);
 
 			if(verify.verify(tlNode.alphaPublicKey, info.signature, 'hex')){
 				
 				console.log('verified');
 
 				//Need to change this to use block
+				//console.log(info);
 				var hash = crypto.createHmac('sha256', info.name)
                         .update( info.key )
                         .digest('hex');
@@ -101,12 +105,12 @@ var onmessage = function(req, res) {
 		                db.put(hash, {'name': info.name, permissions: info.permissions, 'key': info.key }, function(err) {
 		                	
 		                	if(err) throw err;
-		                	console.log('placed data');
+		                	//console.log('placed data');
 
 		                	res.save(info)
 		                });
 		            }else{
-		            	console.log('value already exists');
+		            	//console.log('value already exists');
 		            }
 
                 });
@@ -148,12 +152,29 @@ var onquery = function(req, res) {
 }
 
 /*
- *
- *
+ * req { node, from, payload, block }
+ * res { save, read, send, cb }
  */
 var onjoin = function(req, res) {
-	return true;
 
+	var payload = req.payload;
+	var name = payload.name;
+	var key = payload.key;
+	var hash = crypto.createHmac('sha256', name)
+                        .update( key )
+                        .digest('hex');
+
+
+    db.get(hash, function (err, value){
+                	
+    	if(value.length === 0){
+    		//console.log('not in db');
+    		res.cb(false);
+        }else{
+        	//console.log('in db');
+        	res.cb(true);
+        }
+    });
 }
 
 /*
