@@ -35,9 +35,11 @@ function BetaNode() {
     for(var i = 0; i < Math.random() * props.length; i++){
     	perms.push(props[Math.random() * props.length])
     	console.log(props)
-    	console.log
+    	console.log(perms)
     	console.log(perms[i])
     }
+
+    this.transactions = []
 
 }
 
@@ -243,6 +245,10 @@ BetaNode.prototype.start = function() {
         }
 	}, this);
 };
+
+BetaNode.prototype.clearTransactions = function() {
+	this.transactions = [];
+}
 
 if (typeof(module) != "undefined" && typeof(exports) != "undefined")
     module.exports = BetaNode;
