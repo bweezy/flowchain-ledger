@@ -335,13 +335,20 @@ Server.prototype.start = function(options, node) {
   miner.setTransactions([this.node]);
   miner.setPreviousBlock(block);
 
-  // Start to generate a hash
+
   this._miner_id = setInterval(function() {
+      // sync merkle root based on tranasctions that have happened during this interval
+      miner.setTransactions([node.transactions])
+      
+      // Start to generate a hash
       miner.generateHash();
       //console.log('mining');
       // A success hash is generated
-      if (miner.isSuccess()) {
+      if (miner.isSuccess()) {          
           var block = miner.getNewBlock();
+
+          // if successful, clear transaction array
+          node.clearTransactions();
 
           // Successful mined and save the new block
           self.blockchain.push(block);

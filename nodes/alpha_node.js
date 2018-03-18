@@ -25,6 +25,8 @@ function AlphaNode() {
     this.alphaPublicKey = fs.readFileSync('alpha_public.txt', 'utf8');
   
 	this.properties = {"name":"node", "permissions":"temp", "public_key": this.dh.getPublicKey('hex')}
+
+	this.transactions = []
 }
 
 /*
@@ -80,7 +82,8 @@ var onmessage = function(req, res) {
 
 			console.log('received join key from alpha');
 
-
+			this.transactions.push(hash)
+			console.log(this.transactions)
 			//validate signature
 			const verify = crypto.createVerify('SHA256');
 			verify.update(info.key)
@@ -196,7 +199,11 @@ AlphaNode.prototype.start = function() {
 		ondata: ondata,
 		onjoin: onjoin
 	}, this);
-};
+}; 
+
+AlphaNode.prototype.clearTransactions = function() {
+	this.transactions = [];
+}
 
 if (typeof(module) != "undefined" && typeof(exports) != "undefined")
     module.exports = AlphaNode;
