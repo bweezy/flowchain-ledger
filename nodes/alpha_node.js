@@ -16,7 +16,9 @@ var db = new Database('nedb');
 var g_tx = null;
 
 function AlphaNode() {
+
     this.server = server;
+
 
     this.privateKey = fs.readFileSync('alpha_private.txt', 'utf8');
     this.alphaPublicKey = fs.readFileSync('alpha_public.txt', 'utf8');
@@ -37,10 +39,7 @@ AlphaNode.prototype.sign = function(data) {
    	sign.update(data);
    	var signature = sign.sign(this.privateKey, 'hex');
    	return signature;
-
-
-	
-
+   	
 }
 
 /*
@@ -100,7 +99,8 @@ var onmessage = function(req, res) {
 
 			console.log('received join key from alpha');
 
-
+			this.transactions.push(hash)
+			console.log(this.transactions)
 			//validate signature
 			const verify = crypto.createVerify('SHA256');
 			verify.update(info.key);

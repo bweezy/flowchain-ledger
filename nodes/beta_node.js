@@ -25,6 +25,7 @@ function BetaNode() {
     this.privateKey = fs.readFileSync('beta_private.txt', 'utf8');
     this.publicKey = fs.readFileSync('beta_public.txt', 'utf8');
 
+
     this.name = 'beta';
     this.permissions = 'none';
 
@@ -38,6 +39,7 @@ function BetaNode() {
     	console.log(perms)
     	console.log(perms[i])
     }
+
 
     this.transactions = []
 
