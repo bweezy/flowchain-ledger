@@ -252,12 +252,13 @@ Node.prototype.read = function(key) {
 /*
  * @return {boolean}
  */
-Node.prototype.join = function(remote, name, key) {
+Node.prototype.join = function(remote, name, key, signature) {
     //console.log(this.server);
     var message = {
         type: Chord.NOTIFY_JOIN,
         name: name,
-        key: key
+        key: key,
+        signature: signature
     };
 
     this.predecessor = null;
@@ -397,7 +398,8 @@ Node.prototype.dispatch = function(_from, _message) {
             if (ChordUtils.DebugNodeJoin)
                 console.info('Node joined: ' + JSON.stringify(from));
 
-            console.log('notify join message: ', message);
+            //console.log('from: ', JSON.stringify(from))
+            //console.log('notify join message: ', message);
             
             this.server.onjoin(from, message, function(result){
                 //add signature verification
@@ -467,7 +469,7 @@ Node.prototype.dispatch = function(_from, _message) {
                 console.log('JOIN ACCEPTED');
                 from = message.from;
             }
-            console.log('confirm join message', message);
+            //console.log('confirm join message', message);
 
 
 
