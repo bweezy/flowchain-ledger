@@ -27,6 +27,8 @@ function AlphaNode() {
   
 
 	this.properties = {"name": this.name, "permissions": this.permissions, "public_key": this.public_key};
+
+	this.transactions = []
 }
 
 AlphaNode.prototype.sign = function(data) {
@@ -37,7 +39,7 @@ AlphaNode.prototype.sign = function(data) {
    	return signature;
 
 
-	this.transactions = []
+	
 
 }
 
