@@ -58,6 +58,7 @@ var onmessage = function(req, res) {
 
 	if(typeof info.type !== 'undefined')
 	{
+		// record any type of transaction
 		if(info.type === 'query')
 		{
 			console.log('received query');
@@ -90,12 +91,14 @@ var onmessage = function(req, res) {
 				if (err)
 						return console.log('Database put error = ', err);
 			});
+			console.log('hash: ' + hash)
+			tlNode.transactions.push(hash)
+			// console.log(tlNode.transactions)
 		}else if(info.type === 'join key'){
 
 			console.log('received join key from alpha');
 
-			this.transactions.push(hash)
-			console.log(this.transactions)
+
 			//validate signature
 			const verify = crypto.createVerify('SHA256');
 			verify.update(info.key);
@@ -126,7 +129,8 @@ var onmessage = function(req, res) {
 
                 });
 
-
+                tlNode.transactions.push(hash)
+				// console.log(tlNode.transactions)
 
 
 			}else{

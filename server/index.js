@@ -342,7 +342,7 @@ Server.prototype.start = function(options, node) {
 
   this._miner_id = setInterval(function() {
       // sync merkle root based on tranasctions that have happened during this interval
-      miner.setTransactions([node.transactions])
+      miner.setTransactions(node.transactions)
       
       // Start to generate a hash
       miner.generateHash();
@@ -352,6 +352,7 @@ Server.prototype.start = function(options, node) {
           var block = miner.getNewBlock();
 
           // if successful, clear transaction array
+          console.log('Transactions : ' + node.transactions)
           node.clearTransactions();
 
           // Successful mined and save the new block
