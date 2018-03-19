@@ -102,7 +102,7 @@ function Server() {
   this.endpoint = process.env.ENDPOINT || null;
   this.thingid = process.env.THINGID || '5550937980d51931b3000009';
   this.server = null;
-
+  this.topLayerNode = node;
   // initialize the public attributes
   this.nodes = {};
 
@@ -296,7 +296,6 @@ Server.prototype.start = function(options, node) {
   var self = this;
 
   this.topLayerNode = node;
-  //console.log(this.topLayerNode);
   var options = options || {};
 
   for (var prop in options) {
@@ -321,7 +320,9 @@ Server.prototype.start = function(options, node) {
 
   // Connect to a subsequent Chord node
   if (typeof options.join === 'object') {
-    this.node.join(options.join, this.topLayerNode.name, this.topLayerNode.publicKey);
+    console.log(JSON.stringify(this.node._self));
+    var signature = this.topLayerNode.sign(JSON.stringify(this.node._self));
+    this.node.join(options.join, this.topLayerNode.name, this.topLayerNode.publicKey, signature);
     //add signature
   }
 
@@ -413,8 +414,10 @@ Server.prototype.read = function(key) {
 
 Server.prototype.onjoin = function(from, message, callback){
 
+
   var req = {
-    node: {}
+    node: {},
+    tlNode: {}
   };
   
   var res = {
@@ -427,6 +430,8 @@ Server.prototype.onjoin = function(from, message, callback){
   req.from = from;
   req.payload = message;
   req.block = this.blockchain[this.blockchain.length - 1];
+
+  req.tlNode = this.topLayerNode;
 
   res.save = this.save.bind(this);
   res.read = this.read.bind(this);

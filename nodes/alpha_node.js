@@ -31,6 +31,14 @@ function AlphaNode() {
 	this.properties = {"name": this.name, "permissions": this.permissions, "public_key": this.public_key};
 }
 
+AlphaNode.prototype.sign = function(data) {
+
+	var sign = crypto.createSign('SHA256');
+   	sign.update(data);
+   	var signature = sign.sign(this.privateKey, 'hex');
+   	return signature;
+}
+
 /*
  * req { tlNode, node, payload, block }
  * res ( save, read, send )
@@ -157,24 +165,43 @@ var onquery = function(req, res) {
  */
 var onjoin = function(req, res) {
 
+	const verify = crypto.createVerify('SHA256');
+	
+	var from = req.from;
 	var payload = req.payload;
 	var name = payload.name;
 	var key = payload.key;
-	var hash = crypto.createHmac('sha256', name)
+	var signature = payload.signature;
+	
+
+	verify.update(JSON.stringify(from));
+
+	if(!verify.verify(payload.key, payload.signature, 'hex'))
+	{
+		console.log('join rejected');
+		res.cb(false);
+
+	}else{
+		console.log('signature verified')
+		var hash = crypto.createHmac('sha256', name)
                         .update( key )
                         .digest('hex');
 
 
-    db.get(hash, function (err, value){
-                	
-    	if(value.length === 0){
-    		//console.log('not in db');
-    		res.cb(false);
-        }else{
-        	//console.log('in db');
-        	res.cb(true);
-        }
-    });
+	    db.get(hash, function (err, value){
+	                	
+	    	if(value.length === 0){
+	    		//console.log('not in db');
+	    		res.cb(false);
+	        }else{
+	        	//console.log('in db');
+	        	res.cb(true);
+	        }
+	    });
+
+	}
+
+	
 }
 
 /*
