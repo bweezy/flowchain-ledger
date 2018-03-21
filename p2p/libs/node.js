@@ -106,16 +106,18 @@ Node.prototype._startUpdateFingers = function() {
 
         // Print finger table, predecessor and successor
         if (ChordUtils.DebugPrintFingerTable) {
-            var dataset = [];
+            
 
+            var dataset = [];
+            /*
             for (var i = this.fingers.length - 1; i >= 0; --i) {
                 dataset.push({
                     next: i,
                     key: this.fingers[i].key,
                     successor: this.fingers[i].successor.id
                 });
-            }
-            console.table(dataset);
+            }*/
+            //console.table(dataset);
 
             console.log('----------------------');
             console.log('successor: ' + JSON.stringify(this.successor));
@@ -464,7 +466,7 @@ Node.prototype.dispatch = function(_from, _message) {
                 this.join_denies = 0;
                 break;
             }else{
-                this.join_confrims = 0;
+                this.join_confirms = 0;
                 this.join_denies = 0;
                 console.log('JOIN ACCEPTED');
                 from = message.from;
