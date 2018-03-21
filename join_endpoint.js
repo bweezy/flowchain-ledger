@@ -4,6 +4,8 @@ var WebSocketClient = require('websocket').client;
 
 var client = new WebSocketClient();
 
+var num = process.argv[2];
+
 client.on('connectFailed', function(error) {
     console.log('Connect Error: ' + error.toString());
 });
@@ -22,10 +24,10 @@ client.on('connect', function(connection) {
             var number = Math.round(Math.random() * 0xFFFFFF);
             var lucky = Math.round(Math.random() * 100 + 1);
 
-            betaKey = fs.readFileSync('beta_public.txt', 'utf8');
+            betaKey = fs.readFileSync('./keys/beta_public' + num + '.txt', 'utf8');
             var obj = {"name":"beta", "permissions":"temp", "key": betaKey, "type" : "join key"}
 
-            console.log('[SEND]', JSON.stringify(obj));
+            //console.log('[SEND]', JSON.stringify(obj));
 
             connection.sendUTF(JSON.stringify(obj));
         }

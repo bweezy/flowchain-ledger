@@ -16,14 +16,17 @@ var db = new Database('nedb');
 
 var g_tx = null;
 
-function BetaNode() {
+function BetaNode(num) {
     this.server = server;
 
 
-    this.alphaPublicKey = fs.readFileSync('alpha_public.txt', 'utf8');
+    this.alphaPublicKey = fs.readFileSync('./keys/alpha_public.txt', 'utf8');
 
-    this.privateKey = fs.readFileSync('beta_private.txt', 'utf8');
-    this.publicKey = fs.readFileSync('beta_public.txt', 'utf8');
+    var privateKeyFile = './keys/beta_private' + num + '.txt';
+    var publicKeyFile = './keys/beta_public' + num + '.txt';
+
+    this.privateKey = fs.readFileSync(privateKeyFile, 'utf8');
+    this.publicKey = fs.readFileSync(publicKeyFile, 'utf8');
 
     this.name = 'beta';
     this.permissions = 'none';
@@ -179,7 +182,7 @@ var onjoin = function(req, res) {
 		res.cb(false);
 
 	}else{
-		console.log('signature verified')
+		//console.log('signature verified')
 		var hash = crypto.createHmac('sha256', name)
                         .update( key )
                         .digest('hex');
@@ -189,6 +192,7 @@ var onjoin = function(req, res) {
 	                	
 	    	if(value.length === 0){
 	    		//console.log('not in db');
+	    		console.log('join rejected - nonexistent');
 	    		res.cb(false);
 	        }else{
 	        	//console.log('in db');

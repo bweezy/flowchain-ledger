@@ -17,12 +17,9 @@ var g_tx = null;
 
 function AlphaNode() {
     this.server = server;
-    var prime_length = 60;
-    this.dh = crypto.createDiffieHellman(prime_length);
-    this.dh.generateKeys('hex')
 
-    this.privateKey = fs.readFileSync('alpha_private.txt', 'utf8');
-    this.alphaPublicKey = fs.readFileSync('alpha_public.txt', 'utf8');
+    this.privateKey = fs.readFileSync('./keys/alpha_private.txt', 'utf8');
+    this.alphaPublicKey = fs.readFileSync('./keys/alpha_public.txt', 'utf8');
 
     this.name = 'alpha';
     this.permissions = 'temp';
@@ -182,7 +179,7 @@ var onjoin = function(req, res) {
 		res.cb(false);
 
 	}else{
-		console.log('signature verified')
+		//console.log('signature verified')
 		var hash = crypto.createHmac('sha256', name)
                         .update( key )
                         .digest('hex');
@@ -192,6 +189,7 @@ var onjoin = function(req, res) {
 	                	
 	    	if(value.length === 0){
 	    		//console.log('not in db');
+	    		console.log('join rejected - nonexistent');
 	    		res.cb(false);
 	        }else{
 	        	//console.log('in db');

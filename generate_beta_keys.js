@@ -3,11 +3,13 @@ var fs = require('fs');
 
 var pair = keypair();
 
+var num = process.argv[2];
 
-fs.writeFile('beta_public.txt', pair.public, function(err) {
+
+fs.writeFile('./keys/beta_public' + num + '.txt', pair.public, function(err) {
 	if(err) throw err;
 });
 
-fs.writeFile('beta_private.txt', pair.private, function(err) {
+fs.writeFile('./keys/beta_private' + num + '.txt', pair.private, function(err) {
 	if(err) throw err;
 });
